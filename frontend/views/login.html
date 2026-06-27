@@ -51,8 +51,12 @@
       cursor: pointer;
     }
     button:hover { background: #1557b0; }
-    .error {
-      color: #d93025;
+    button.register {
+      margin-top: 10px;
+      background: #34a853;
+    }
+    button.register:hover { background: #2d8f47; }
+    .msg {
       font-size: 13px;
       margin-top: 10px;
       text-align: center;
@@ -68,7 +72,8 @@
     <label>Contraseña</label>
     <input type="password" id="password" placeholder="Ingresa tu contraseña">
     <button onclick="login()">Ingresar</button>
-    <p class="error" id="error-msg">Credenciales inválidas</p>
+    <button class="register" onclick="register()">Registrarse</button>
+    <p class="msg" id="msg"></p>
   </div>
   <script>
     async function login() {
@@ -80,10 +85,34 @@
         body: JSON.stringify({ username, password })
       });
       const data = await res.json();
+      const msg = document.getElementById('msg');
       if (data.success) {
         window.location.href = data.redirect;
       } else {
-        document.getElementById('error-msg').style.display = 'block';
+        msg.style.color = '#d93025';
+        msg.textContent = 'Credenciales inválidas';
+        msg.style.display = 'block';
+      }
+    }
+
+    async function register() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      const msg = document.getElementById('msg');
+      if (data.success) {
+        msg.style.color = '#34a853';
+        msg.textContent = 'Usuario creado, ahora inicia sesión';
+        msg.style.display = 'block';
+      } else {
+        msg.style.color = '#d93025';
+        msg.textContent = data.error;
+        msg.style.display = 'block';
       }
     }
   </script>
