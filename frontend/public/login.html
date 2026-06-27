@@ -76,13 +76,26 @@
     <p class="msg" id="msg"></p>
   </div>
   <script>
+    function validar() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const msg = document.getElementById('msg');
+      if (!username || !password) {
+        msg.style.color = '#d93025';
+        msg.textContent = 'Debes ingresar usuario y contraseña';
+        msg.style.display = 'block';
+        return false;
+      }
+      return { username, password };
+    }
+
     async function login() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const datos = validar();
+      if (!datos) return;
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify(datos)
       });
       const data = await res.json();
       const msg = document.getElementById('msg');
@@ -96,12 +109,12 @@
     }
 
     async function register() {
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const datos = validar();
+      if (!datos) return;
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify(datos)
       });
       const data = await res.json();
       const msg = document.getElementById('msg');
@@ -111,7 +124,7 @@
         msg.style.display = 'block';
       } else {
         msg.style.color = '#d93025';
-        msg.textContent = data.error;
+        msg.textContent = 'Usuario ya existe';
         msg.style.display = 'block';
       }
     }
