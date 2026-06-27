@@ -86,6 +86,11 @@ app.get('/dashboard', verifyToken, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
 });
 
+// Redirigir raíz al login
+app.get('/', (req, res) => {
+  res.redirect('/login.html');
+});
+
 // Health check para el Load Balancer
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
