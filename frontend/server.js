@@ -20,7 +20,9 @@ const pool = new Pool({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'views')));
+
+// Solo archivos públicos
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware autenticación JWT
 function verifyToken(req, res, next) {
@@ -52,7 +54,7 @@ app.post('/api/login', async (req, res) => {
       { expiresIn: '8h' }
     );
     res.cookie('token', token, { httpOnly: true });
-    res.json({ success: true, redirect: '/dashboard.html' });
+    res.json({ success: true, redirect: '/dashboard' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error del servidor' });
@@ -83,7 +85,7 @@ app.post('/api/logout', (req, res) => {
 
 // Ruta protegida — dashboard
 app.get('/dashboard', verifyToken, (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'dashboard.html'));
+  res.sendFile(path.join(__dirname, 'private', 'dashboard.html'));
 });
 
 // Redirigir raíz al login
