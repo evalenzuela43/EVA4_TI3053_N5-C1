@@ -59,6 +59,22 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Registro
+app.post('/api/register', async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const hash = await bcrypt.hash(password, 10);
+    await pool.query(
+      'INSERT INTO users (username, password) VALUES ($1, $2)',
+      [username, hash]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Usuario ya existe o error del servidor' });
+  }
+});
+
 // Logout
 app.post('/api/logout', (req, res) => {
   res.clearCookie('token');
