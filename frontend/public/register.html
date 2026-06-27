@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIMI ERP - Login</title>
+  <title>SIMI ERP - Registro</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -43,14 +43,14 @@
     button {
       width: 100%;
       padding: 12px;
-      background: #1a73e8;
+      background: #34a853;
       color: white;
       border: none;
       border-radius: 4px;
       font-size: 15px;
       cursor: pointer;
     }
-    button:hover { background: #1557b0; }
+    button:hover { background: #2d8f47; }
     .msg {
       font-size: 13px;
       margin-top: 10px;
@@ -74,24 +74,34 @@
     <input type="text" id="username" placeholder="Ingresa tu usuario">
     <label>Contraseña</label>
     <input type="password" id="password" placeholder="Ingresa tu contraseña">
-    <button onclick="login()">Ingresar</button>
+    <label>Confirmar contraseña</label>
+    <input type="password" id="confirm" placeholder="Confirma tu contraseña">
+    <button onclick="register()">Crear cuenta</button>
     <p class="msg" id="msg"></p>
-    <div class="link">¿No tienes cuenta? <a href="/register.html">Regístrate</a></div>
+    <div class="link">¿Ya tienes cuenta? <a href="/login.html">Inicia sesión</a></div>
   </div>
   <script>
-    async function login() {
+    async function register() {
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
+      const confirm = document.getElementById('confirm').value.trim();
       const msg = document.getElementById('msg');
 
-      if (!username || !password) {
+      if (!username || !password || !confirm) {
         msg.style.color = '#d93025';
-        msg.textContent = 'Debes ingresar usuario y contraseña';
+        msg.textContent = 'Todos los campos son obligatorios';
         msg.style.display = 'block';
         return;
       }
 
-      const res = await fetch('/api/login', {
+      if (password !== confirm) {
+        msg.style.color = '#d93025';
+        msg.textContent = 'Las contraseñas no coinciden';
+        msg.style.display = 'block';
+        return;
+      }
+
+      const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
@@ -99,10 +109,13 @@
       const data = await res.json();
 
       if (data.success) {
-        window.location.href = data.redirect;
+        msg.style.color = '#34a853';
+        msg.textContent = 'Cuenta creada, redirigiendo...';
+        msg.style.display = 'block';
+        setTimeout(() => window.location.href = '/login.html', 1500);
       } else {
         msg.style.color = '#d93025';
-        msg.textContent = 'Credenciales inválidas';
+        msg.textContent = 'El usuario ya existe';
         msg.style.display = 'block';
       }
     }
